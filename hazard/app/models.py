@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.utils import timezone
+import random, string
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -64,3 +65,17 @@ class Hazard(models.Model):
 
     def __str__(self):
         return f"{self.HazardCategory} at {self.address} ({self.status})"
+
+class OTPVerification(models.Model):
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def generate_otp(self):
+        """Generate a random 6-digit OTP"""
+        self.otp = ''.join(random.choices(string.digits, k=6))
+        self.save()
+
+    def __str__(self):
+        return f"OTP for {self.email}"
